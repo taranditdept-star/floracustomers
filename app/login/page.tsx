@@ -11,14 +11,17 @@ import {
   VStack,
   useToast,
   Text,
-  Card,
-  CardBody,
+  HStack,
+  Flex,
+  InputGroup,
+  InputLeftElement,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import { EmailIcon, LockIcon } from '@chakra-ui/icons'
 
-export default function LoginPage() {
+export default function ModernLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -37,7 +40,6 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Get user profile with company info
       const { data: profile } = await supabase
         .from('profiles')
         .select(`
@@ -59,14 +61,13 @@ export default function LoginPage() {
       }
 
       toast({
-        title: 'Login Successful!',
-        description: `Welcome back!`,
+        title: 'Welcome back!',
+        description: 'Login successful',
         status: 'success',
         duration: 3000,
         isClosable: true,
       })
 
-      // Redirect to CRM dashboard for all users
       router.push('/crm')
     } catch (error: any) {
       toast({
@@ -82,55 +83,167 @@ export default function LoginPage() {
   }
 
   return (
-    <Container maxW="container.sm" py={16}>
-      <Card>
-        <CardBody>
-          <VStack spacing={6}>
-            <Box textAlign="center">
-              <Heading size="lg" color="blue.600">
-                Flora Gas
+    <Flex minH="100vh" bg="gray.50">
+      <Flex
+        flex={1}
+        display={{ base: 'none', lg: 'flex' }}
+        bgGradient="linear(to-br, brand.500, brand.700)"
+        position="relative"
+        overflow="hidden"
+      >
+        <Box
+          position="absolute"
+          top="-10%"
+          right="-10%"
+          w="500px"
+          h="500px"
+          bg="whiteAlpha.100"
+          borderRadius="full"
+        />
+        <Box
+          position="absolute"
+          bottom="-20%"
+          left="-10%"
+          w="600px"
+          h="600px"
+          bg="whiteAlpha.100"
+          borderRadius="full"
+        />
+        
+        <VStack
+          spacing={6}
+          justify="center"
+          align="center"
+          p={12}
+          position="relative"
+          zIndex={1}
+        >
+          <Heading size="2xl" color="white" textAlign="center">
+            Welcome Back!
+          </Heading>
+          <Text fontSize="xl" color="whiteAlpha.900" textAlign="center" maxW="md">
+            Manage customer data across all Ensign Holdings subsidiaries from one centralized platform
+          </Text>
+          <HStack spacing={4} mt={8}>
+            <Box
+              w="12px"
+              h="12px"
+              bg="white"
+              borderRadius="full"
+              opacity={0.6}
+            />
+            <Box
+              w="12px"
+              h="12px"
+              bg="white"
+              borderRadius="full"
+            />
+            <Box
+              w="12px"
+              h="12px"
+              bg="white"
+              borderRadius="full"
+              opacity={0.6}
+            />
+          </HStack>
+        </VStack>
+      </Flex>
+
+      <Flex flex={1} align="center" justify="center" p={8}>
+        <Container maxW="md">
+          <VStack spacing={8} align="stretch">
+            <VStack spacing={2} textAlign="center">
+              <Heading size="xl" color="gray.800">
+                Sign In
               </Heading>
-              <Text fontSize="xl" mt={2}>
-                Staff Login
+              <Text color="gray.600">
+                Enter your credentials to access your account
               </Text>
+            </VStack>
+
+            <Box
+              bg="white"
+              p={8}
+              borderRadius="2xl"
+              boxShadow="xl"
+              border="1px"
+              borderColor="gray.100"
+            >
+              <form onSubmit={handleLogin}>
+                <VStack spacing={6}>
+                  <FormControl isRequired>
+                    <FormLabel color="gray.700" fontWeight="600">Email Address</FormLabel>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <EmailIcon color="gray.400" />
+                      </InputLeftElement>
+                      <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        size="lg"
+                        borderRadius="lg"
+                        bg="gray.50"
+                        border="1px"
+                        borderColor="gray.200"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', bg: 'white' }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel color="gray.700" fontWeight="600">Password</FormLabel>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none">
+                        <LockIcon color="gray.400" />
+                      </InputLeftElement>
+                      <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        size="lg"
+                        borderRadius="lg"
+                        bg="gray.50"
+                        border="1px"
+                        borderColor="gray.200"
+                        _hover={{ borderColor: 'gray.300' }}
+                        _focus={{ borderColor: 'brand.500', bg: 'white' }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+
+                  <Button
+                    type="submit"
+                    colorScheme="brand"
+                    size="lg"
+                    width="full"
+                    isLoading={isLoading}
+                    loadingText="Signing in..."
+                    borderRadius="lg"
+                    fontSize="md"
+                    fontWeight="600"
+                    h="56px"
+                    _hover={{
+                      transform: 'translateY(-2px)',
+                      boxShadow: 'lg',
+                    }}
+                    transition="all 0.2s"
+                  >
+                    Sign In
+                  </Button>
+                </VStack>
+              </form>
             </Box>
 
-            <form onSubmit={handleLogin} style={{ width: '100%' }}>
-              <VStack spacing={4}>
-                <FormControl isRequired>
-                  <FormLabel>Email</FormLabel>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                  />
-                </FormControl>
-
-                <FormControl isRequired>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                  />
-                </FormControl>
-
-                <Button
-                  type="submit"
-                  colorScheme="blue"
-                  isLoading={isLoading}
-                  loadingText="Signing in..."
-                  width="full"
-                >
-                  Sign In
-                </Button>
-              </VStack>
-            </form>
+            <Text textAlign="center" color="gray.600" fontSize="sm">
+              Need help? Contact your system administrator
+            </Text>
           </VStack>
-        </CardBody>
-      </Card>
-    </Container>
+        </Container>
+      </Flex>
+    </Flex>
   )
 }

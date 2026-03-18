@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Chakra } from './chakra-provider'
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Flora Gas Customer Registration",
-  description: "Digital customer registration system for Flora Gas Zimbabwe",
+  title: "Ensign CRM - Customer Management System",
+  description: "Centralized customer management for Ensign Holdings subsidiaries",
 };
 
 export default function RootLayout({
@@ -23,9 +23,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased`}
       >
-        <Chakra>
+        <Providers>
           {children}
-        </Chakra>
+        </Providers>
       </body>
     </html>
   );
