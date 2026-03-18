@@ -49,8 +49,8 @@ import {
   EditIcon,
   AddIcon,
   TimeIcon,
-  PeopleIcon,
-  Building2Icon,
+  InfoIcon,
+  StarIcon,
   ArrowUpIcon
 } from '@chakra-ui/icons'
 
@@ -219,7 +219,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="blue.100" borderRadius="lg">
-                  <Icon as={PeopleIcon} w={6} h={6} color="blue.600" />
+                  <Icon as={InfoIcon} w={6} h={6} color="blue.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">Total Customers</StatLabel>
@@ -233,7 +233,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="green.100" borderRadius="lg">
-                  <Icon as={Building2Icon} w={6} h={6} color="green.600" />
+                  <Icon as={StarIcon} w={6} h={6} color="green.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">Total Companies</StatLabel>
@@ -281,7 +281,6 @@ export default function CRMDashboard() {
                   placeholder="Search customers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  leftElement={<SearchIcon color="gray.400" />}
                 />
               </Box>
               {canViewAllCompanies && (
