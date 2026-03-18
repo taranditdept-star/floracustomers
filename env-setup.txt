@@ -1,0 +1,7 @@
+# Create a file named .env.local in the root of your project and add the following:
+
+NEXT_PUBLIC_SUPABASE_URL=https://imquxxqvdfrihmwyvlxz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcXV4eHF2ZGZyaWhtd3l2bHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MjcyNzYsImV4cCI6MjA4OTQwMzI3Nn0.qddwWdXA6oKu4l6GLqnpKY6DY1GAA6vFI5yNG2aDyDo
+
+# After creating the .env.local file, restart your development server with:
+# npm run dev
