@@ -24,7 +24,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { EditIcon, ViewIcon, SignOutIcon } from '@chakra-ui/icons'
+import { EditIcon, ViewIcon, ExitIcon } from '@chakra-ui/icons'
 
 interface Customer {
   id: string
@@ -122,7 +122,7 @@ export default function DashboardPage() {
       <VStack spacing={6} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">Customer Dashboard</Heading>
-          <Button onClick={handleSignOut} colorScheme="red" leftIcon={<SignOutIcon />}>
+          <Button onClick={handleSignOut} colorScheme="red" leftIcon={<ExitIcon />}>
             Sign Out
           </Button>
         </HStack>
