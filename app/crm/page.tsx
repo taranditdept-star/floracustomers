@@ -47,11 +47,11 @@ import {
   SettingsIcon,
   ViewIcon,
   EditIcon,
-  PlusIcon,
-  BarChartIcon,
-  UsersIcon,
-  BuildingIcon,
-  TrendingUpIcon
+  AddIcon,
+  TimeIcon,
+  PeopleIcon,
+  Building2Icon,
+  ArrowUpIcon
 } from '@chakra-ui/icons'
 
 interface Company {
@@ -219,7 +219,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="blue.100" borderRadius="lg">
-                  <Icon as={UsersIcon} w={6} h={6} color="blue.600" />
+                  <Icon as={PeopleIcon} w={6} h={6} color="blue.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">Total Customers</StatLabel>
@@ -233,7 +233,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="green.100" borderRadius="lg">
-                  <Icon as={BuildingIcon} w={6} h={6} color="green.600" />
+                  <Icon as={Building2Icon} w={6} h={6} color="green.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">Total Companies</StatLabel>
@@ -247,7 +247,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="purple.100" borderRadius="lg">
-                  <Icon as={TrendingUpIcon} w={6} h={6} color="purple.600" />
+                  <Icon as={ArrowUpIcon} w={6} h={6} color="purple.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">New Today</StatLabel>
@@ -261,7 +261,7 @@ export default function CRMDashboard() {
             <CardBody>
               <Flex align="center">
                 <Box p={3} bg="orange.100" borderRadius="lg">
-                  <Icon as={BarChartIcon} w={6} h={6} color="orange.600" />
+                  <Icon as={TimeIcon} w={6} h={6} color="orange.600" />
                 </Box>
                 <Box ml={4}>
                   <StatLabel color="gray.600">Active Users</StatLabel>
@@ -299,7 +299,7 @@ export default function CRMDashboard() {
                 </Select>
               )}
               <Button
-                leftIcon={<PlusIcon />}
+                leftIcon={<AddIcon />}
                 colorScheme="blue"
                 onClick={() => router.push('/register')}
               >

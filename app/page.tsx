@@ -18,10 +18,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { 
-  BuildingIcon, 
-  UsersIcon, 
-  BarChartIcon,
-  ShieldIcon 
+  Building2Icon, 
+  PeopleIcon, 
+  TimeIcon,
+  CheckCircleIcon 
 } from '@chakra-ui/icons'
 
 export default function HomePage() {
@@ -41,22 +41,22 @@ export default function HomePage() {
 
   const features = [
     {
-      icon: BuildingIcon,
+      icon: Building2Icon,
       title: 'Multi-Company Support',
       description: 'Manage customer data across all Ensign Holdings subsidiaries',
     },
     {
-      icon: UsersIcon,
+      icon: PeopleIcon,
       title: 'Role-Based Access',
       description: 'Marketing managers see all data, companies see only their data',
     },
     {
-      icon: BarChartIcon,
+      icon: TimeIcon,
       title: 'Real-time Analytics',
       description: 'Track customer registrations and company performance',
     },
     {
-      icon: ShieldIcon,
+      icon: CheckCircleIcon,
       title: 'Secure & Private',
       description: 'Your data is protected with enterprise-grade security',
     },
