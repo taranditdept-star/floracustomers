@@ -11,17 +11,16 @@ import {
   VStack,
   useToast,
   Text,
-  HStack,
-  Flex,
   InputGroup,
   InputLeftElement,
+  Flex,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 import { EmailIcon, LockIcon } from '@chakra-ui/icons'
 
-export default function ModernLoginPage() {
+export default function UltraModernLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -39,42 +38,6 @@ export default function ModernLoginPage() {
       })
 
       if (error) throw error
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          companies(*)
-        `)
-        .eq('id', data.user?.id)
-        .single()
-
-      // If no profile exists, create one
-      if (profileError || !profile) {
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user?.id,
-            email: data.user?.email,
-            role: 'company_user',
-          })
-        
-        if (insertError) {
-          console.error('Profile creation error:', insertError)
-        }
-      }
-
-      // Check if user has access
-      if (profile && !profile.company_id && profile.role !== 'marketing_manager' && !profile.can_view_all_companies) {
-        toast({
-          title: 'Access Denied',
-          description: 'You are not assigned to any company. Please contact your administrator.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
-        return
-      }
 
       toast({
         title: 'Welcome back!',
@@ -99,167 +62,153 @@ export default function ModernLoginPage() {
   }
 
   return (
-    <Flex minH="100vh" bg="gray.50">
-      <Flex
-        flex={1}
-        display={{ base: 'none', lg: 'flex' }}
-        bgGradient="linear(to-br, brand.500, brand.700)"
-        position="relative"
-        overflow="hidden"
-      >
-        <Box
-          position="absolute"
-          top="-10%"
-          right="-10%"
-          w="500px"
-          h="500px"
-          bg="whiteAlpha.100"
-          borderRadius="full"
-        />
-        <Box
-          position="absolute"
-          bottom="-20%"
-          left="-10%"
-          w="600px"
-          h="600px"
-          bg="whiteAlpha.100"
-          borderRadius="full"
-        />
-        
-        <VStack
-          spacing={6}
-          justify="center"
-          align="center"
-          p={12}
-          position="relative"
-          zIndex={1}
-        >
-          <Heading size="2xl" color="white" textAlign="center">
-            Welcome Back!
-          </Heading>
-          <Text fontSize="xl" color="whiteAlpha.900" textAlign="center" maxW="md">
-            Manage customer data across all Ensign Holdings subsidiaries from one centralized platform
-          </Text>
-          <HStack spacing={4} mt={8}>
-            <Box
-              w="12px"
-              h="12px"
-              bg="white"
-              borderRadius="full"
-              opacity={0.6}
-            />
-            <Box
-              w="12px"
-              h="12px"
-              bg="white"
-              borderRadius="full"
-            />
-            <Box
-              w="12px"
-              h="12px"
-              bg="white"
-              borderRadius="full"
-              opacity={0.6}
-            />
-          </HStack>
-        </VStack>
-      </Flex>
+    <Flex minH="100vh" align="center" justify="center" position="relative">
+      {/* Animated Background Circles */}
+      <Box
+        position="absolute"
+        top="-20%"
+        right="-10%"
+        w="600px"
+        h="600px"
+        bg="whiteAlpha.100"
+        borderRadius="full"
+        filter="blur(80px)"
+        animation="float 6s ease-in-out infinite"
+      />
+      <Box
+        position="absolute"
+        bottom="-20%"
+        left="-10%"
+        w="700px"
+        h="700px"
+        bg="whiteAlpha.100"
+        borderRadius="full"
+        filter="blur(80px)"
+        animation="float 8s ease-in-out infinite reverse"
+      />
 
-      <Flex flex={1} align="center" justify="center" p={8}>
-        <Container maxW="md">
+      <Container maxW="md" position="relative" zIndex={1}>
+        <Box
+          bg="whiteAlpha.200"
+          backdropFilter="blur(20px)"
+          borderRadius="3xl"
+          border="1px solid"
+          borderColor="whiteAlpha.300"
+          boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+          p={10}
+          className="animate-fade-in"
+        >
           <VStack spacing={8} align="stretch">
             <VStack spacing={2} textAlign="center">
-              <Heading size="xl" color="gray.800">
-                Sign In
+              <Heading size="2xl" color="white" fontWeight="800">
+                Welcome Back
               </Heading>
-              <Text color="gray.600">
-                Enter your credentials to access your account
+              <Text color="whiteAlpha.800" fontSize="lg">
+                Sign in to your account
               </Text>
             </VStack>
 
-            <Box
-              bg="white"
-              p={8}
-              borderRadius="2xl"
-              boxShadow="xl"
-              border="1px"
-              borderColor="gray.100"
-            >
-              <form onSubmit={handleLogin}>
-                <VStack spacing={6}>
-                  <FormControl isRequired>
-                    <FormLabel color="gray.700" fontWeight="600">Email Address</FormLabel>
-                    <InputGroup>
-                      <InputLeftElement pointerEvents="none">
-                        <EmailIcon color="gray.400" />
-                      </InputLeftElement>
-                      <Input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        size="lg"
-                        borderRadius="lg"
-                        bg="gray.50"
-                        border="1px"
-                        borderColor="gray.200"
-                        _hover={{ borderColor: 'gray.300' }}
-                        _focus={{ borderColor: 'brand.500', bg: 'white' }}
-                      />
-                    </InputGroup>
-                  </FormControl>
+            <form onSubmit={handleLogin}>
+              <VStack spacing={6}>
+                <FormControl isRequired>
+                  <FormLabel color="white" fontWeight="600" fontSize="sm">
+                    Email Address
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <EmailIcon color="whiteAlpha.600" />
+                    </InputLeftElement>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      size="lg"
+                      bg="whiteAlpha.200"
+                      border="1px solid"
+                      borderColor="whiteAlpha.300"
+                      color="white"
+                      _placeholder={{ color: 'whiteAlpha.600' }}
+                      _hover={{ borderColor: 'whiteAlpha.400', bg: 'whiteAlpha.250' }}
+                      _focus={{ borderColor: 'white', bg: 'whiteAlpha.300', boxShadow: '0 0 0 1px white' }}
+                      borderRadius="xl"
+                    />
+                  </InputGroup>
+                </FormControl>
 
-                  <FormControl isRequired>
-                    <FormLabel color="gray.700" fontWeight="600">Password</FormLabel>
-                    <InputGroup>
-                      <InputLeftElement pointerEvents="none">
-                        <LockIcon color="gray.400" />
-                      </InputLeftElement>
-                      <Input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        size="lg"
-                        borderRadius="lg"
-                        bg="gray.50"
-                        border="1px"
-                        borderColor="gray.200"
-                        _hover={{ borderColor: 'gray.300' }}
-                        _focus={{ borderColor: 'brand.500', bg: 'white' }}
-                      />
-                    </InputGroup>
-                  </FormControl>
+                <FormControl isRequired>
+                  <FormLabel color="white" fontWeight="600" fontSize="sm">
+                    Password
+                  </FormLabel>
+                  <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                      <LockIcon color="whiteAlpha.600" />
+                    </InputLeftElement>
+                    <Input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      size="lg"
+                      bg="whiteAlpha.200"
+                      border="1px solid"
+                      borderColor="whiteAlpha.300"
+                      color="white"
+                      _placeholder={{ color: 'whiteAlpha.600' }}
+                      _hover={{ borderColor: 'whiteAlpha.400', bg: 'whiteAlpha.250' }}
+                      _focus={{ borderColor: 'white', bg: 'whiteAlpha.300', boxShadow: '0 0 0 1px white' }}
+                      borderRadius="xl"
+                    />
+                  </InputGroup>
+                </FormControl>
 
-                  <Button
-                    type="submit"
-                    colorScheme="brand"
-                    size="lg"
-                    width="full"
-                    isLoading={isLoading}
-                    loadingText="Signing in..."
-                    borderRadius="lg"
-                    fontSize="md"
-                    fontWeight="600"
-                    h="56px"
-                    _hover={{
-                      transform: 'translateY(-2px)',
-                      boxShadow: 'lg',
-                    }}
-                    transition="all 0.2s"
-                  >
-                    Sign In
-                  </Button>
-                </VStack>
-              </form>
-            </Box>
+                <Button
+                  type="submit"
+                  size="lg"
+                  width="full"
+                  isLoading={isLoading}
+                  loadingText="Signing in..."
+                  bg="white"
+                  color="purple.600"
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
+                  }}
+                  _active={{
+                    transform: 'translateY(0)',
+                  }}
+                  borderRadius="xl"
+                  fontSize="md"
+                  fontWeight="700"
+                  h="56px"
+                  transition="all 0.2s"
+                >
+                  Sign In
+                </Button>
+              </VStack>
+            </form>
 
-            <Text textAlign="center" color="gray.600" fontSize="sm">
+            <Text textAlign="center" color="whiteAlpha.700" fontSize="sm">
               Need help? Contact your system administrator
             </Text>
           </VStack>
-        </Container>
-      </Flex>
+        </Box>
+
+        <Text textAlign="center" color="whiteAlpha.600" fontSize="xs" mt={6}>
+          © 2026 Ensign Holdings. All rights reserved.
+        </Text>
+      </Container>
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+      `}</style>
     </Flex>
   )
 }

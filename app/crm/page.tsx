@@ -3,18 +3,12 @@
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   Heading,
   HStack,
-  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Table,
   Tbody,
   Td,
@@ -24,10 +18,20 @@ import {
   Tr,
   VStack,
   Badge,
-  Tabs,
-  TabList,
-  Tab,
+  Avatar,
   useToast,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Card,
+  CardBody,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  Grid,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -36,11 +40,11 @@ import {
   SearchIcon, 
   ChevronDownIcon,
   AddIcon,
-  CalendarIcon,
-  DeleteIcon,
+  BellIcon,
   SettingsIcon,
   ViewIcon,
   EditIcon,
+  ArrowUpIcon,
 } from '@chakra-ui/icons'
 
 interface Customer {
@@ -53,21 +57,29 @@ interface Customer {
   email: string
   physical_address: string
   created_at: string
-  company_specific_fields: any
 }
 
-export default function CleanCRMDashboard() {
+export default function ModernCRMDashboard() {
   const router = useRouter()
   const toast = useToast()
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [selectedCustomers, setSelectedCustomers] = useState<Set<string>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
+    checkAuth()
     fetchCustomers()
   }, [])
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      router.push('/login')
+      return
+    }
+    setUser(session.user)
+  }
 
   const fetchCustomers = async () => {
     try {
@@ -92,22 +104,9 @@ export default function CleanCRMDashboard() {
     }
   }
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedCustomers(new Set(filteredCustomers.map(c => c.id)))
-    } else {
-      setSelectedCustomers(new Set())
-    }
-  }
-
-  const handleSelectCustomer = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedCustomers)
-    if (checked) {
-      newSelected.add(id)
-    } else {
-      newSelected.delete(id)
-    }
-    setSelectedCustomers(newSelected)
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
   }
 
   const filteredCustomers = customers.filter(customer =>
@@ -116,294 +115,304 @@ export default function CleanCRMDashboard() {
       .includes(searchTerm.toLowerCase())
   )
 
-  const getStatusBadge = (customer: Customer) => {
-    const statuses = ['Approve', 'Incomplete', 'Completed', 'Pending']
-    const colors = ['green', 'red', 'blue', 'orange']
-    const randomIndex = Math.floor(Math.random() * statuses.length)
-    
-    return (
-      <Badge
-        colorScheme={colors[randomIndex]}
-        px={3}
-        py={1}
-        borderRadius="md"
-        fontSize="xs"
-        fontWeight="600"
-      >
-        {statuses[randomIndex]}
-      </Badge>
-    )
-  }
-
-  const Sidebar = () => (
-    <Box
-      w="240px"
-      bg="white"
-      borderRight="1px"
-      borderColor="gray.200"
-      h="100vh"
-      position="fixed"
-      left="0"
-      top="0"
-    >
-      <VStack align="stretch" spacing={0} h="full">
-        <Box p={6} borderBottom="1px" borderColor="gray.200">
-          <Heading size="md" color="gray.700">Ensign CRM</Heading>
-        </Box>
-
-        <VStack align="stretch" spacing={0} p={3} flex={1}>
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<Box w="4px" h="4px" bg="orange.500" borderRadius="full" />}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Activity
-            <Badge ml="auto" colorScheme="orange" borderRadius="full">12</Badge>
-          </Button>
-          
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<CalendarIcon />}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Dashboard
-          </Button>
-
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<ViewIcon />}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Clients
-          </Button>
-
-          <Button
-            justifyContent="flex-start"
-            variant="solid"
-            size="sm"
-            leftIcon={<Box as="span" fontSize="lg">📋</Box>}
-            fontWeight="600"
-            bg="gray.100"
-            color="gray.800"
-            _hover={{ bg: 'gray.200' }}
-            borderLeft="3px solid"
-            borderColor="gray.800"
-            borderRadius="md"
-          >
-            Customers
-          </Button>
-
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<Box as="span" fontSize="lg">📊</Box>}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Reports
-          </Button>
-
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<SettingsIcon />}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Settings
-          </Button>
-
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<Box as="span" fontSize="lg">❓</Box>}
-            fontWeight="500"
-            color="gray.600"
-            _hover={{ bg: 'gray.50' }}
-          >
-            Support
-          </Button>
-        </VStack>
-
-        <Box p={3} borderTop="1px" borderColor="gray.200">
-          <Button
-            justifyContent="flex-start"
-            variant="ghost"
-            size="sm"
-            leftIcon={<Box as="span" fontSize="lg">❓</Box>}
-            fontWeight="500"
-            color="gray.600"
-            w="full"
-          >
-            Need Help?
-          </Button>
-        </Box>
-      </VStack>
-    </Box>
-  )
-
   return (
-    <Box bg="gray.50" minH="100vh">
-      <Sidebar />
+    <Box minH="100vh" bg="transparent" position="relative">
+      {/* Glassmorphism Container */}
+      <Box
+        maxW="1400px"
+        mx="auto"
+        p={8}
+        className="animate-fade-in"
+      >
+        {/* Header */}
+        <Flex
+          justify="space-between"
+          align="center"
+          mb={8}
+          p={6}
+          bg="whiteAlpha.200"
+          backdropFilter="blur(20px)"
+          borderRadius="2xl"
+          border="1px solid"
+          borderColor="whiteAlpha.300"
+          boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+        >
+          <VStack align="start" spacing={1}>
+            <Heading size="xl" color="white" fontWeight="800">
+              Ensign CRM
+            </Heading>
+            <Text color="whiteAlpha.800" fontSize="sm">
+              Welcome back, {user?.email}
+            </Text>
+          </VStack>
+          <HStack spacing={4}>
+            <IconButton
+              aria-label="Notifications"
+              icon={<BellIcon />}
+              variant="ghost"
+              color="white"
+              _hover={{ bg: 'whiteAlpha.200' }}
+              borderRadius="xl"
+            />
+            <IconButton
+              aria-label="Settings"
+              icon={<SettingsIcon />}
+              variant="ghost"
+              color="white"
+              _hover={{ bg: 'whiteAlpha.200' }}
+              borderRadius="xl"
+            />
+            <Menu>
+              <MenuButton
+                as={Button}
+                rightIcon={<ChevronDownIcon />}
+                bg="whiteAlpha.200"
+                color="white"
+                _hover={{ bg: 'whiteAlpha.300' }}
+                _active={{ bg: 'whiteAlpha.300' }}
+                borderRadius="xl"
+                fontWeight="600"
+              >
+                Account
+              </MenuButton>
+              <MenuList bg="white" borderRadius="xl" border="none" boxShadow="xl">
+                <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem>
+                <MenuItem onClick={handleSignOut} color="red.500">Sign Out</MenuItem>
+              </MenuList>
+            </Menu>
+          </HStack>
+        </Flex>
 
-      <Box ml="240px">
-        <Box bg="white" borderBottom="1px" borderColor="gray.200" px={8} py={4}>
-          <Flex align="center" justify="space-between" mb={4}>
-            <HStack spacing={2}>
-              <IconButton
-                aria-label="Back"
-                icon={<ChevronDownIcon transform="rotate(90deg)" />}
-                variant="ghost"
-                size="sm"
+        {/* Stats Cards */}
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={8}>
+          <Card
+            bg="whiteAlpha.200"
+            backdropFilter="blur(20px)"
+            border="1px solid"
+            borderColor="whiteAlpha.300"
+            borderRadius="2xl"
+            boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+            transition="all 0.3s"
+            _hover={{ transform: 'translateY(-4px)', boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.5)' }}
+          >
+            <CardBody>
+              <Stat>
+                <StatLabel color="whiteAlpha.800" fontSize="sm" fontWeight="600">
+                  Total Customers
+                </StatLabel>
+                <StatNumber color="white" fontSize="4xl" fontWeight="800">
+                  {customers.length}
+                </StatNumber>
+                <StatHelpText color="green.300" fontWeight="600">
+                  <ArrowUpIcon /> +12% from last month
+                </StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+
+          <Card
+            bg="whiteAlpha.200"
+            backdropFilter="blur(20px)"
+            border="1px solid"
+            borderColor="whiteAlpha.300"
+            borderRadius="2xl"
+            boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+            transition="all 0.3s"
+            _hover={{ transform: 'translateY(-4px)', boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.5)' }}
+          >
+            <CardBody>
+              <Stat>
+                <StatLabel color="whiteAlpha.800" fontSize="sm" fontWeight="600">
+                  New This Week
+                </StatLabel>
+                <StatNumber color="white" fontSize="4xl" fontWeight="800">
+                  24
+                </StatNumber>
+                <StatHelpText color="green.300" fontWeight="600">
+                  <ArrowUpIcon /> +8% from last week
+                </StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+
+          <Card
+            bg="whiteAlpha.200"
+            backdropFilter="blur(20px)"
+            border="1px solid"
+            borderColor="whiteAlpha.300"
+            borderRadius="2xl"
+            boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+            transition="all 0.3s"
+            _hover={{ transform: 'translateY(-4px)', boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.5)' }}
+          >
+            <CardBody>
+              <Stat>
+                <StatLabel color="whiteAlpha.800" fontSize="sm" fontWeight="600">
+                  Active Companies
+                </StatLabel>
+                <StatNumber color="white" fontSize="4xl" fontWeight="800">
+                  14
+                </StatNumber>
+                <StatHelpText color="whiteAlpha.700" fontWeight="600">
+                  All subsidiaries
+                </StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+        </Grid>
+
+        {/* Main Content */}
+        <Box
+          bg="whiteAlpha.200"
+          backdropFilter="blur(20px)"
+          borderRadius="2xl"
+          border="1px solid"
+          borderColor="whiteAlpha.300"
+          boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+          p={6}
+        >
+          {/* Search and Actions */}
+          <Flex justify="space-between" align="center" mb={6}>
+            <InputGroup maxW="400px">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="whiteAlpha.700" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search customers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                bg="whiteAlpha.200"
+                border="1px solid"
+                borderColor="whiteAlpha.300"
+                color="white"
+                _placeholder={{ color: 'whiteAlpha.600' }}
+                _hover={{ borderColor: 'whiteAlpha.400' }}
+                _focus={{ borderColor: 'white', bg: 'whiteAlpha.300' }}
+                borderRadius="xl"
               />
-              <Text fontSize="sm" color="gray.500">Customers /</Text>
-              <Text fontSize="sm" fontWeight="600">Manage Customers</Text>
-            </HStack>
+            </InputGroup>
             <Button
               leftIcon={<AddIcon />}
-              colorScheme="blue"
-              size="sm"
-              borderRadius="md"
+              bg="white"
+              color="purple.600"
+              _hover={{ bg: 'whiteAlpha.900', transform: 'translateY(-2px)', boxShadow: 'xl' }}
+              _active={{ transform: 'translateY(0)' }}
+              borderRadius="xl"
+              fontWeight="700"
+              px={8}
+              transition="all 0.2s"
               onClick={() => router.push('/register')}
             >
-              Add New
+              Add New Customer
             </Button>
           </Flex>
 
-          <Tabs index={activeTab} onChange={setActiveTab} variant="unstyled">
-            <TabList borderBottom="2px" borderColor="gray.100">
-              <Tab
-                fontSize="sm"
-                fontWeight="600"
-                color="gray.600"
-                _selected={{ color: 'blue.600', borderBottom: '2px solid', borderColor: 'blue.600' }}
-                pb={3}
-              >
-                All Customers
-                <Badge ml={2} colorScheme="gray" borderRadius="full" fontSize="xs">{filteredCustomers.length}</Badge>
-              </Tab>
-              <Tab
-                fontSize="sm"
-                fontWeight="600"
-                color="gray.600"
-                _selected={{ color: 'blue.600', borderBottom: '2px solid', borderColor: 'blue.600' }}
-                pb={3}
-              >
-                Active Customers
-                <Badge ml={2} colorScheme="gray" borderRadius="full" fontSize="xs">50</Badge>
-              </Tab>
-              <Tab
-                fontSize="sm"
-                fontWeight="600"
-                color="gray.600"
-                _selected={{ color: 'blue.600', borderBottom: '2px solid', borderColor: 'blue.600' }}
-                pb={3}
-              >
-                Pending
-                <Badge ml={2} colorScheme="gray" borderRadius="full" fontSize="xs">15</Badge>
-              </Tab>
-            </TabList>
-          </Tabs>
-        </Box>
-
-        <Box px={8} py={6}>
-          <Flex align="center" justify="space-between" mb={6}>
-            <HStack spacing={3}>
-              <IconButton aria-label="Calendar" icon={<CalendarIcon />} variant="outline" size="sm" />
-              <IconButton aria-label="Delete" icon={<DeleteIcon />} variant="outline" size="sm" />
-              <IconButton aria-label="Sort" icon={<Box as="span">⇅</Box>} variant="outline" size="sm" />
-              <IconButton aria-label="Filter" icon={<SettingsIcon />} variant="outline" size="sm" />
-              <InputGroup maxW="300px" size="sm">
-                <InputLeftElement pointerEvents="none">
-                  <SearchIcon color="gray.400" />
-                </InputLeftElement>
-                <Input
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  bg="white"
-                  borderRadius="md"
-                />
-              </InputGroup>
-            </HStack>
-            <IconButton aria-label="More" icon={<Box as="span">⋯</Box>} variant="ghost" size="sm" />
-          </Flex>
-
-          <Box bg="white" borderRadius="lg" border="1px" borderColor="gray.200" overflow="hidden">
-            <Table variant="simple" size="sm">
-              <Thead bg="gray.50">
+          {/* Table */}
+          <Box
+            bg="whiteAlpha.100"
+            borderRadius="xl"
+            overflow="hidden"
+            border="1px solid"
+            borderColor="whiteAlpha.200"
+          >
+            <Table variant="simple">
+              <Thead bg="whiteAlpha.200">
                 <Tr>
-                  <Th w="40px">
-                    <Checkbox
-                      isChecked={selectedCustomers.size === filteredCustomers.length && filteredCustomers.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                    />
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Customer
                   </Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Customer ID</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Customer Name</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Company</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Phone</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Date</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Payment Status</Th>
-                  <Th color="gray.600" fontWeight="600" fontSize="xs">Status</Th>
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Company
+                  </Th>
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Phone
+                  </Th>
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Email
+                  </Th>
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Date
+                  </Th>
+                  <Th color="white" fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="wider">
+                    Actions
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredCustomers.map((customer, index) => (
-                  <Tr key={customer.id} _hover={{ bg: 'gray.50' }}>
+                {filteredCustomers.slice(0, 10).map((customer) => (
+                  <Tr
+                    key={customer.id}
+                    _hover={{ bg: 'whiteAlpha.200' }}
+                    transition="all 0.2s"
+                  >
                     <Td>
-                      <Checkbox
-                        isChecked={selectedCustomers.has(customer.id)}
-                        onChange={(e) => handleSelectCustomer(customer.id, e.target.checked)}
-                      />
+                      <HStack>
+                        <Avatar
+                          size="sm"
+                          name={`${customer.first_name} ${customer.surname}`}
+                          bg="purple.500"
+                        />
+                        <VStack align="start" spacing={0}>
+                          <Text color="white" fontWeight="600" fontSize="sm">
+                            {customer.first_name} {customer.surname}
+                          </Text>
+                          <Text color="whiteAlpha.700" fontSize="xs">
+                            {customer.physical_address}
+                          </Text>
+                        </VStack>
+                      </HStack>
                     </Td>
                     <Td>
-                      <Text fontSize="sm" color="blue.600" fontWeight="600">
-                        {String(index + 1).padStart(10, '0')}
+                      <Badge
+                        colorScheme="purple"
+                        bg="whiteAlpha.300"
+                        color="white"
+                        px={3}
+                        py={1}
+                        borderRadius="full"
+                        fontWeight="600"
+                      >
+                        {customer.company_name}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      <Text color="whiteAlpha.900" fontSize="sm">
+                        {customer.phone_number}
+                      </Text>
+                    </Td>
+                    <Td>
+                      <Text color="whiteAlpha.900" fontSize="sm">
+                        {customer.email || '-'}
+                      </Text>
+                    </Td>
+                    <Td>
+                      <Text color="whiteAlpha.800" fontSize="sm">
+                        {new Date(customer.created_at).toLocaleDateString()}
                       </Text>
                     </Td>
                     <Td>
                       <HStack spacing={2}>
-                        <Box as="span" fontSize="lg">{index % 3 === 0 ? '👤' : '👥'}</Box>
-                        <Text fontSize="sm" fontWeight="500">{customer.first_name} {customer.surname}</Text>
+                        <IconButton
+                          aria-label="View"
+                          icon={<ViewIcon />}
+                          size="sm"
+                          bg="whiteAlpha.200"
+                          color="white"
+                          _hover={{ bg: 'whiteAlpha.300' }}
+                          borderRadius="lg"
+                          onClick={() => router.push(`/customer/${customer.id}`)}
+                        />
+                        <IconButton
+                          aria-label="Edit"
+                          icon={<EditIcon />}
+                          size="sm"
+                          bg="whiteAlpha.200"
+                          color="white"
+                          _hover={{ bg: 'whiteAlpha.300' }}
+                          borderRadius="lg"
+                          onClick={() => router.push(`/edit/${customer.id}`)}
+                        />
                       </HStack>
-                    </Td>
-                    <Td>
-                      <HStack spacing={2}>
-                        <Box as="span" fontSize="sm">🏢</Box>
-                        <Text fontSize="sm" color="gray.600">{customer.company_name}</Text>
-                      </HStack>
-                    </Td>
-                    <Td>
-                      <Text fontSize="sm" color="gray.600">{customer.phone_number}</Text>
-                    </Td>
-                    <Td>
-                      <Text fontSize="sm" color="gray.600">
-                        {new Date(customer.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                      </Text>
-                    </Td>
-                    <Td>
-                      <Text fontSize="sm" color="gray.600">Paid</Text>
-                    </Td>
-                    <Td>
-                      {getStatusBadge(customer)}
                     </Td>
                   </Tr>
                 ))}
@@ -412,34 +421,12 @@ export default function CleanCRMDashboard() {
 
             {filteredCustomers.length === 0 && (
               <Box textAlign="center" py={12}>
-                <Text color="gray.500">No customers found</Text>
+                <Text color="whiteAlpha.700" fontSize="lg">
+                  No customers found
+                </Text>
               </Box>
             )}
           </Box>
-
-          <Flex align="center" justify="space-between" mt={4}>
-            <HStack spacing={2}>
-              <Button size="sm" variant="outline">1</Button>
-              <Button size="sm" variant="ghost">2</Button>
-              <Button size="sm" variant="ghost">10</Button>
-              <Button size="sm" variant="ghost">12</Button>
-              <Button size="sm" variant="ghost">13</Button>
-              <Button size="sm" variant="ghost">14</Button>
-            </HStack>
-            <HStack spacing={4}>
-              <Text fontSize="sm" color="gray.600">Rows Count</Text>
-              <Menu>
-                <MenuButton as={Button} size="sm" variant="ghost" rightIcon={<ChevronDownIcon />}>
-                  ⋯
-                </MenuButton>
-                <MenuList>
-                  <MenuItem>10 per page</MenuItem>
-                  <MenuItem>25 per page</MenuItem>
-                  <MenuItem>50 per page</MenuItem>
-                </MenuList>
-              </Menu>
-            </HStack>
-          </Flex>
         </Box>
       </Box>
     </Box>
