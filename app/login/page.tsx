@@ -37,12 +37,26 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Get user role from profiles table
+      // Get user profile with company info
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select(`
+          *,
+          companies(*)
+        `)
         .eq('id', data.user?.id)
         .single()
+
+      if (!profile?.company_id && profile?.role !== 'marketing_manager') {
+        toast({
+          title: 'Access Denied',
+          description: 'You are not assigned to any company',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
+        return
+      }
 
       toast({
         title: 'Login Successful!',
@@ -52,12 +66,8 @@ export default function LoginPage() {
         isClosable: true,
       })
 
-      // Redirect based on role
-      if (profile?.role === 'marketing_manager') {
-        router.push('/dashboard')
-      } else {
-        router.push('/')
-      }
+      // Redirect to CRM dashboard for all users
+      router.push('/crm')
     } catch (error: any) {
       toast({
         title: 'Login Failed',
