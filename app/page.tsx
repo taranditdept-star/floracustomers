@@ -19,12 +19,16 @@ import {
   CardBody,
   Stack,
   StackDivider,
+  IconButton,
 } from '@chakra-ui/react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase'
+import { EditIcon } from '@chakra-ui/icons'
 
 export default function CustomerRegistrationForm() {
   const toast = useToast()
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [requiresDelivery, setRequiresDelivery] = useState(false)
   
@@ -156,14 +160,24 @@ export default function CustomerRegistrationForm() {
       <Card>
         <CardBody>
           <VStack spacing={6} align="stretch">
-            <Box textAlign="center">
-              <Heading size="lg" color="blue.600">
-                Flora Gas
-              </Heading>
-              <Text fontSize="xl" mt={2}>
-                Customer Registration Form
-              </Text>
-            </Box>
+            <HStack justify="space-between" align="center">
+              <Box textAlign="left">
+                <Heading size="lg" color="blue.600">
+                  Flora Gas
+                </Heading>
+                <Text fontSize="xl" mt={2}>
+                  Customer Registration Form
+                </Text>
+              </Box>
+              <Button
+                leftIcon={<EditIcon />}
+                colorScheme="blue"
+                variant="outline"
+                onClick={() => router.push('/login')}
+              >
+                Staff Login
+              </Button>
+            </HStack>
 
             <form onSubmit={handleSubmit}>
               <Stack divider={<StackDivider />} spacing={6}>
