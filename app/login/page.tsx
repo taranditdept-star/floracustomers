@@ -40,7 +40,7 @@ export default function ModernLoginPage() {
 
       if (error) throw error
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select(`
           *,
@@ -49,10 +49,26 @@ export default function ModernLoginPage() {
         .eq('id', data.user?.id)
         .single()
 
-      if (!profile?.company_id && profile?.role !== 'marketing_manager') {
+      // If no profile exists, create one
+      if (profileError || !profile) {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user?.id,
+            email: data.user?.email,
+            role: 'company_user',
+          })
+        
+        if (insertError) {
+          console.error('Profile creation error:', insertError)
+        }
+      }
+
+      // Check if user has access
+      if (profile && !profile.company_id && profile.role !== 'marketing_manager' && !profile.can_view_all_companies) {
         toast({
           title: 'Access Denied',
-          description: 'You are not assigned to any company',
+          description: 'You are not assigned to any company. Please contact your administrator.',
           status: 'error',
           duration: 5000,
           isClosable: true,
