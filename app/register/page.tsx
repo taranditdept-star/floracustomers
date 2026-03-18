@@ -21,6 +21,7 @@ import {
   StackDivider,
   SimpleGrid,
   Divider,
+  Badge,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
